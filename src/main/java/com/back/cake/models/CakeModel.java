@@ -5,7 +5,14 @@ package com.back.cake.models;
 
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.back.cake.DTOS.CakeDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,7 +54,8 @@ public class CakeModel {
 	@Column(name="imagemReceita")
 	private String imagemReceita;
 	
-	@Column(name="descricao")
+	@Lob
+	@Column(name="descricao" ,columnDefinition = "LONGTEXT")
 	private String descricao;
 
 	@OneToMany(mappedBy = "cakeModel",cascade = CascadeType.ALL)
@@ -65,11 +73,17 @@ public class CakeModel {
 	public List<IngredientesModel>  ListgetIngredientes() {
 		return  ingredientes;
 	}
+	// private final String uploadDirectory = "uploads/";
 
-	public void updateDTO(CakeDTO dto){
+	public void updateDTO(CakeDTO dto) {
 		this.nomeReceita = dto.nomeReceita();
-		// this.imagemReceita = dto.imagemReceita();
 		this.descricao = dto.descricao();
+		
+		
+
+		
+
+
 		
 	}
 

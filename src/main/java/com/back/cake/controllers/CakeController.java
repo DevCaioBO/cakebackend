@@ -23,6 +23,8 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +44,7 @@ import com.back.cake.models.IngredientesModel;
 import com.back.cake.repositories.CakeRepository;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import java.nio.file.Path;
 
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,7 +64,7 @@ public class CakeController {
 	@Autowired
 	private CakeRepository repository;
 
-	//Puxa todos os registros de receitas no banco
+	
 @GetMapping("/getCake")
 public ResponseEntity<?> getCake() {
     List<CakeModel> cakeModels = repository.findAll();
@@ -74,7 +77,7 @@ public ResponseEntity<?> getCake() {
         cakeDTOTransferers.setNomeReceita(cakeModel.getNomeReceita());
         cakeDTOTransferers.setDescricao(cakeModel.getDescricao());
 
-        // Converte a imagem para Base64
+    
         String imageName = cakeModel.getImagemReceita();
         String filePath = uploadDirectory + imageName;
 
@@ -83,7 +86,7 @@ public ResponseEntity<?> getCake() {
             String base64Image = Base64.getEncoder().encodeToString(imageBytes);
             cakeDTOTransferers.setImagemReceita(base64Image);
         } catch (IOException e) {
-            cakeDTOTransferers.setImagemReceita(null); // ou um valor padrão
+            cakeDTOTransferers.setImagemReceita(null); 
         }
 
         cakeDTOTransferer.add(cakeDTOTransferers);
@@ -97,69 +100,26 @@ public String convertImageToBase64(String pimageName) throws Exception{
 
     try {
         byte[] imageBytes = Files.readAllBytes(Paths.get(filePath));
-        // String base64Image = Base64.getEncoder().encodeToString(imageBytes);
         return  Base64.getEncoder().encodeToString(imageBytes);
        
     } catch (IOException e) {
-        return  "erro ao converter nossa imagem para imagem64 java:96";
+        return  "erro ao converter imagem";
     }
     
 }
 
-
-
-// @GetMapping("/getCake/{id}")
-// public ResponseEntity<?> getCakeById(@PathVariable Integer id) {
-//     CakeModel cakeModel =  repository.findById(id).get();
-//     // List<CakeDTOTransferer> cakeDTOTransferer = new ArrayList<>();
-
-
-    
-//         CakeDTOTransferer cakeDTOTransferer = new CakeDTOTransferer();
-//         cakeDTOTransferer.setId_Caker(cakeModel.getId_Cake());
-//         cakeDTOTransferer.setNomeReceita(cakeModel.getNomeReceita());
-//         cakeDTOTransferer.setDescricao(cakeModel.getDescricao());
-//         cakeDTOTransferer.setIngredients(cakeModel.ListgetIngredientes());
-
-//         // Converte a imagem para Base64
-//         String imageName = cakeModel.getImagemReceita();
-//         String filePath = uploadDirectory + imageName;
-
-//         try {
-//             byte[] imageBytes = Files.readAllBytes(Paths.get(filePath));
-//             String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-//             cakeDTOTransferer.setImagemReceita(base64Image);
-//         } catch (IOException e) {
-//             cakeDTOTransferer.setImagemReceita(null); // ou um valor padrão
-//         }
-
-//         // cakeDTOTransferer.add(cakeDTOTransferers);
-    
-
-//     return ResponseEntity.ok().body(cakeDTOTransferer);
-// }
-
-
-
     @GetMapping("/getCake/{id}")
     public ResponseEntity<?> getMethodById(@PathVariable Integer id) throws Exception {
-        // CakeModel cakeModel = new CakeModel();
-
         
         List<RevenuesDTO> revenues = new ArrayList<RevenuesDTO>();
-      
-
 
         Connection con =  DriverManager.getConnection( host, uname, upass );
-        String sql ="select * from tbcake c " + //
-                        " inner join ingredientes i on c.id_Cake = i.id_Cake "+  //
-                        " where 1=1" + //
+        String sql ="select * from tbcake c " + 
+                        " inner join ingredientes i on c.id_Cake = i.id_Cake "+  
+                        " where 1=1" + 
                         " and c.id_Cake = ?";
         PreparedStatement stmt =    con.prepareStatement(sql);
-        stmt.setInt(1, id); // Primeiro parâmetro
-        // List<IngredientesModel> lstIng = new ArrayList<>();
-        
-
+        stmt.setInt(1, id); 
         ResultSet rs =  stmt.executeQuery();
  
         while (rs.next()) {
@@ -179,88 +139,17 @@ public String convertImageToBase64(String pimageName) throws Exception{
         
         return ResponseEntity.status(200).body(revenues);
     }
-
-	
-	
-    // @PostMapping("/postCake")
-    // public ResponseEntity<?> postCake(
-    // @RequestParam("nomeReceita") String nomeReceita,
-    // @RequestParam("descricao") String descricao,
-    // @RequestParam("imagemReceita") MultipartFile imagemReceita) {
-
-    // CakeModel cakeModel = new CakeModel();
-    // cakeModel.setNomeReceita(nomeReceita);
-    // cakeModel.setDescricao(descricao);
-
-    // try {
-    //     // Limita o tamanho máximo da imagem, por exemplo, 2MB
-    //     if (imagemReceita.getSize() > 2 * 1024 * 1024) {
-    //         return ResponseEntity.status(400).body("A imagem deve ter no máximo 2MB.");
-    //     }
-
-    //     byte[] bytes = imagemReceita.getBytes();
-    //     BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
-
-    //     // Verifica se a imagem foi lida corretamente
-    //     if (image == null) {
-    //         return ResponseEntity.status(400).body("Imagem inválida.");
-    //     }
-
-    //     // Detectar o tipo de imagem
-    //     String contentType = imagemReceita.getContentType();
-    //     String formatName = "png"; // Default para PNG
-
-    //     if (contentType != null) {
-    //         if (contentType.equals("image/jpeg")) {
-    //             formatName = "jpeg"; // Usar jpeg se for um arquivo JPEG
-    //         } else if (contentType.equals("image/gif")) {
-    //             formatName = "gif"; // Usar gif se for um arquivo GIF
-    //         }
-    //     }
-
-    //     // Compacta a imagem
-    //     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    //     ImageIO.write(image, formatName, baos);
-    //     String base64Image = Base64.getEncoder().encodeToString(baos.toByteArray());
-    //     cakeModel.setImagemReceita(base64Image);
-
-    //     // (Validação de campos e salvamento)
-    //     if (nomeReceita != null && descricao != null && base64Image != null) {
-    //         if (!nomeReceita.isEmpty() && !descricao.isEmpty()) {
-    //             repository.save(cakeModel);
-    //             return ResponseEntity.ok().body(cakeModel);
-    //         } else {
-    //             return ResponseEntity.ok().body("Não insira valores vazios");
-    //         }
-    //     } else {
-    //         return ResponseEntity.ok().body("Atente-se: Nenhum campo pode estar vazio!");
-    //     }
-    // } catch (IOException e) {
-    //     return ResponseEntity.status(500).body("Erro ao processar a imagem: " + e.getMessage());
-    // }
-    // }
     private final String uploadDirectory = "uploads/";
 
     @PostMapping("/postCake")
     public ResponseEntity<?> postCake(@ModelAttribute CakeDTO CakeDTO) throws Exception  {
-
-          
             CakeModel cakeModel = new CakeModel();
             cakeModel.setNomeReceita(CakeDTO.nomeReceita());
             cakeModel.setDescricao(CakeDTO.descricao());
 
-        
             MultipartFile image = CakeDTO.imagemReceita(); 
             long maxFileSizeInKB = 20; 
             
-
-            // if (image.getSize() > maxFileSizeInKB * 1024) {
-            //     return ResponseEntity.status(500).body("Erro ao fazer upload do bolo: GIGANTE IMAGEM ");
-            // } 
-
-            // if (image == null || image.isEmpty()) {
-            //     return ResponseEntity.badRequest().body("Imagem não fornecida.");
-            // }
             String timestamp = String.valueOf(System.currentTimeMillis());
             String fileName = timestamp + "_" + image.getOriginalFilename();
             String filePath = uploadDirectory + fileName;
@@ -291,22 +180,94 @@ public String convertImageToBase64(String pimageName) throws Exception{
     
 
 
-	@PutMapping("putCake/{id_Cake}")
-	public  ResponseEntity<?> putCake(@PathVariable int id_Cake, @RequestBody CakeDTO data) {
-		CakeModel cakeModel = repository.findById(id_Cake).get();
-		cakeModel.updateDTO(data);
-		repository.save(cakeModel);
-		
-		
-		return ResponseEntity.status(200).body("Modificado com sucesso!");
-	}
+@PutMapping("putCake/{id_Cake}")
+public ResponseEntity<?> putCake(@PathVariable Integer id_Cake, @ModelAttribute CakeDTO data) {
+    Optional<CakeModel> optionalCake = repository.findById(id_Cake);
+    
+    if (!optionalCake.isPresent()) {
+        return ResponseEntity.status(404).body("Bolo não encontrado.");
+    }
+
+    CakeModel cakeModel = optionalCake.get();
+    
+    MultipartFile image = data.imagemReceita();
+    String oldFileName = cakeModel.getImagemReceita();
+
+    long maxFileSizeInKB = 40;
+
+    if (image != null && !image.isEmpty()) {
+        
+        if (oldFileName != null && !oldFileName.isEmpty()) {
+            File oldFile = new File(uploadDirectory + oldFileName);
+            if (oldFile.exists()) {
+                oldFile.delete(); 
+            }
+        }
+
+  
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    String fileName = timestamp + "_" + image.getOriginalFilename();
+    String filePath = uploadDirectory + fileName;
+
+    try {
+        File dir = new File(uploadDirectory);
+        if (!dir.exists()) {
+            dir.mkdirs(); 
+        }
+
+        Files.write(Paths.get(filePath), image.getBytes());
+       
+        
+
+        cakeModel.setImagemReceita(fileName);
+       
+    } catch (IOException e) {
+        return ResponseEntity.status(500).body("Erro ao fazer upload do bolo: " + e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Erro inesperado: " + e.getMessage());
+    }
+    }
+        
+        cakeModel.updateDTO(data); 
+        repository.save(cakeModel);
+        return ResponseEntity.ok("Bolo atualizado com sucesso!");
+
+
+}
 
 	@DeleteMapping("deleteCake/{id_Cake}")
 	public ResponseEntity<?> deleteCake(@PathVariable int id_Cake) {
+        Optional<CakeModel> cakemodel = repository.findById(id_Cake);
 
-		repository.deleteById(id_Cake);
 
-		return ResponseEntity.ok("receita deletada");
+
+		 if (cakemodel.isPresent()) {
+            CakeModel receita = cakemodel.get();
+            String fileName = receita.getImagemReceita();  
+
+          
+            Path filePath = Paths.get(uploadDirectory + fileName);
+
+          
+         try {
+              
+                if (Files.exists(filePath)) {
+                    Files.delete(filePath);
+                    
+                    repository.deleteById(id_Cake);
+                    return ResponseEntity.ok("Arquivo e receita deletados com sucesso!");
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo não encontrado!");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao deletar o arquivo.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Receita não encontrada!");
+        }
+    
+
 
 	}
 
