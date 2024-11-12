@@ -21,9 +21,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -102,6 +104,34 @@ public class IngredientesController {
         //     lstIng.add(ingredientesModel);
         // }
         return ResponseEntity.status(200).body(data);
+    }
+
+
+
+
+
+    @DeleteMapping("ingredientes/{id_Ingrediente}")
+    public String deleteMethodById(@PathVariable Integer id_Ingrediente) throws Exception {
+        Connection con =  DriverManager.getConnection( host, uname, upass );
+        String sql ="DELETE FROM ingredientes WHERE id_Ingrediente =?";
+        PreparedStatement stmt =    con.prepareStatement(sql);
+        stmt.setInt(1,id_Ingrediente);
+        stmt.executeUpdate();
+        return "Deletado com sucesso";
+    }
+    @PutMapping("ingredientes/{id_Ingrediente}")
+    public String UpdateMethodById(@RequestBody  IngredientesDTO ingredientesDTO,   @PathVariable Integer id_Ingrediente) throws Exception {
+
+        
+
+        Connection con =  DriverManager.getConnection( host, uname, upass );
+        String sql ="UPDATE ingredientes SET nome_ingrediente=?,nr_qtd=? WHERE  id_Ingrediente=?";
+        PreparedStatement stmt =    con.prepareStatement(sql);
+        stmt.setString(1,ingredientesDTO.nome_Ingrediente());
+        stmt.setString(2,ingredientesDTO.nr_Qtd());
+        stmt.setInt(3,id_Ingrediente);
+        stmt.executeUpdate();
+        return "Modificado com sucesso";
     }
   
 

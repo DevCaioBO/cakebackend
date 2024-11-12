@@ -192,6 +192,7 @@ public ResponseEntity<?> putCake(@PathVariable Integer id_Cake, @ModelAttribute 
     
     MultipartFile image = data.imagemReceita();
     String oldFileName = cakeModel.getImagemReceita();
+  
 
     long maxFileSizeInKB = 40;
 
@@ -227,8 +228,11 @@ public ResponseEntity<?> putCake(@PathVariable Integer id_Cake, @ModelAttribute 
         return ResponseEntity.status(500).body("Erro inesperado: " + e.getMessage());
     }
     }
+
+  
         
         cakeModel.updateDTO(data); 
+    
         repository.save(cakeModel);
         return ResponseEntity.ok("Bolo atualizado com sucesso!");
 
@@ -247,7 +251,7 @@ public ResponseEntity<?> putCake(@PathVariable Integer id_Cake, @ModelAttribute 
 
           
             Path filePath = Paths.get(uploadDirectory + fileName);
-
+            // repository.deleteById(id_Cake);
           
          try {
               
@@ -281,4 +285,6 @@ public ResponseEntity<?> putCake(@PathVariable Integer id_Cake, @ModelAttribute 
 	}
 
 }
+
+
 

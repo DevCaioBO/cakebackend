@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./.env:/app/.env
+      - ./uploads:/app/uploads  # Certifique-se de que este caminho está correto

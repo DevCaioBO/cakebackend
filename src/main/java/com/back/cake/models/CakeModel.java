@@ -76,8 +76,11 @@ public class CakeModel {
 	// private final String uploadDirectory = "uploads/";
 
 	public void updateDTO(CakeDTO dto) {
+	
 		this.nomeReceita = dto.nomeReceita();
+		
 		this.descricao = dto.descricao();
+		
 		
 		
 
