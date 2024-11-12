@@ -2,9 +2,9 @@ services:
   app:
     build: .
     env_file:
-      - .env
+      - ./.env  # Ele usa o .env local no diretório onde o Docker Compose está rodando
     ports:
       - "8080:8080"
     volumes:
-      - ./.env:/app/.env
-      - ./uploads:/app/uploads  # Certifique-se de que este caminho está correto
+      - ./uploads:/app/uploads
+      - ./.env:/app/.env  # Monta o .env dentro do contêiner para uso pela aplicação
