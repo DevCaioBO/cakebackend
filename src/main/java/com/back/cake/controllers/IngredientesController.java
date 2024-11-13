@@ -4,10 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.back.cake.DTOS.IngredientesDTO;
+import com.back.cake.configCake.appConfig;
 import com.back.cake.models.IngredientesModel;
 import com.back.cake.repositories.IngredientesRepository;
 
-import io.github.cdimascio.dotenv.Dotenv;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import io.github.cdimascio.dotenv.Dotenv;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,10 +34,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("crud")
 public class IngredientesController {
-    Dotenv dotenv = Dotenv.load();
+    
+    private final String uname;
+    private final String upass;
+
+ // Injeção de dependência do appConfig
+ @Autowired
+ public IngredientesController(appConfig config) {
+     this.uname = config.getUname();
+     this.upass = config.getUpass();
+ }
+
+    
     String host= "jdbc:mysql://mysqlfirstservice-primeiro-projetojava.i.aivencloud.com:24844/cakereceitas";
-    String uname= dotenv.get("USER_NAME");
-    String upass= dotenv.get("PASSWORD_NAME");
+
+    
+
+    
     @Autowired
     private IngredientesRepository repository;
 

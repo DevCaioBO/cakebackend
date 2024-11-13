@@ -39,11 +39,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.back.cake.DTOS.CakeDTO;
 import com.back.cake.DTOS.CakeDTOTransferer;
 import com.back.cake.DTOS.RevenuesDTO;
+import com.back.cake.configCake.appConfig;
 import com.back.cake.models.CakeModel;
 import com.back.cake.models.IngredientesModel;
 import com.back.cake.repositories.CakeRepository;
 
-import io.github.cdimascio.dotenv.Dotenv;
+
 import java.nio.file.Path;
 
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,11 +57,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RequestMapping("crud")
 public class CakeController {
-    Dotenv dotenv = Dotenv.load();
-    String host= "jdbc:mysql://mysqlfirstservice-primeiro-projetojava.i.aivencloud.com:24844/cakereceitas";
 
-        String uname= dotenv.get("USER_NAME");
-    String upass =dotenv.get("PASSWORD_NAME");
+       
+       private final String uname;
+       private final String upass;
+
+    // Injeção de dependência do appConfig
+    @Autowired
+    public CakeController(appConfig config) {
+        this.uname = config.getUname();
+        this.upass = config.getUpass();
+    }
+
+    
+    String host = "jdbc:mysql://mysqlfirstservice-primeiro-projetojava.i.aivencloud.com:24844/cakereceitas";
+    
+   
+    
 	@Autowired
 	private CakeRepository repository;
 
